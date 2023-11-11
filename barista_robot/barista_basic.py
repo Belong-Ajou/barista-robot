@@ -1,6 +1,7 @@
 from barista_template import BaristaTemplate
 from robot_controller.robot_behavior import RinseBehavior,SkipRinse,Rinse
 import conf
+from time import sleep
 
 class BaristaBasic(BaristaTemplate):
     def _rinse(self):
@@ -10,27 +11,37 @@ class BaristaBasic(BaristaTemplate):
 
     def _place_coffee_grounds(self):
         print("Place the coffee grounds in the filter paper.")
-        self.robot.SetSpeed(2)
+        self.set_speed(30.0)
         point = conf.place_coffee_grounds_point
         eP=[0.000,0.000,0.000,0.000]
         dP=[1.000,1.000,1.000,1.000,1.000,1.000]
+        # 0. 그리퍼 벌리기
+        self.robot.ActGripper(1, 1)
+        self.robot.MoveGripper(1, 100, 40, 50, 10000, 0)
         # 1.원두 컵 앞에 위치(PTP)
-        self.robot.MoveJ(point["J1"], point["P1"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        pose = self.robot.GetForwardKin(point["J1"])  
+        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
+        ret = self.robot.MoveJ(point["J1"], cartesian_pose, 0, 0, self.speed, 100.0, 100.0, eP, -1.0, 0, dP)
         # 2. 원두 컵쪽으로 들어가기(Linear)
-        self.robot.MoveL(point["J2"], point["P2"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        ret = self.robot.MoveL(point["J2"], point["P2"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
         # 3. 원두 컵 잡기 위해 올림(Linear)
-        self.robot.MoveL(point["J3"], point["P3"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        self.robot.MoveL(point["J3"], point["P3"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
         # 3A. 조여서 컵 잡기
         self.robot.ActGripper(1, 1)
-        self.robot.MoveGrippper(1, 0, 40, 50, 10000, 0)
+        self.robot.MoveGripper(1, 0, 40, 50, 10000, 0)
         # 4. 잡은 뒤 컵 올리기(Linear)
-        self.robot.MoveL(point["J4"], point["P4"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        self.robot.MoveL(point["J4"], point["P4"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
         # 5. 붓기 전, 드리퍼 위에 위치시키기(Linear)
-        self.robot.MoveL(point["J5"], point["P6"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        self.robot.MoveL(point["J5"], point["P5"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
         # 6. 붓기 위해 각도 조정(PTP)
-        self.robot.MoveJ(point["J6"], point["P6"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        pose = self.robot.GetForwardKin(point["J6"])  
+        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
+        self.robot.MoveJ(point["J6"], cartesian_pose, 0, 0, self.speed, 100.0, 100.0, eP, -1.0, 0, dP)
         # 7. 원두 붓기(PTP), 각도조정(Joint6-120)
-        self.robot.MoveJ(point["J7"], point["P7"], 1, 0, self.speed, 180.0, 100.0, eP, -1.0, 0, dP)
+        pose = self.robot.GetForwardKin(point["J7"])  
+        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
+        pour_speed = 100.0
+        self.robot.MoveJ(point["J7"], cartesian_pose, 0, 0, pour_speed, 100.0, 100.0, eP, -1.0, 0, dP)
         return
 
     def _bloom(self, time: int, amount: int):

@@ -6,7 +6,7 @@ class BaristaTemplate(ABC):
         super().__init__()
         try:
             self.robot = frrpc.RPC(ip)
-            self.speed = 10
+            self.speed = 30
             self.robot.SetSpeed(self.speed)
         except Exception as e:
             print("[Error]",e)
