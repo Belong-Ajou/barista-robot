@@ -1,20 +1,15 @@
-import frrpc
+from robot_controller.robot_controller import RobotController
 from abc import ABC, abstractmethod
 
 class BaristaTemplate(ABC):
     def __init__(self, ip) -> None:
         super().__init__()
         try:
-            self.robot = frrpc.RPC(ip)
-            self.speed = 30
-            self.robot.SetSpeed(self.speed)
+            self.robot = RobotController(ip)
         except Exception as e:
             print("[Error]",e)
             self.robot = None
         return
-
-    def set_speed(self, speed):
-        self.speed = speed
 
     def make_coffee(self, recipe:dict):
         self._rinse()

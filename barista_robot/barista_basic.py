@@ -11,37 +11,26 @@ class BaristaBasic(BaristaTemplate):
 
     def _place_coffee_grounds(self):
         print("Place the coffee grounds in the filter paper.")
-        self.set_speed(30.0)
+        self.robot.set_speed(30.0)
         point = conf.place_coffee_grounds_point
-        eP=[0.000,0.000,0.000,0.000]
-        dP=[1.000,1.000,1.000,1.000,1.000,1.000]
-        # 0. 그리퍼 벌리기
-        self.robot.ActGripper(1, 1)
-        self.robot.MoveGripper(1, 100, 40, 50, 10000, 0)
-        # 1.원두 컵 앞에 위치(PTP)
-        pose = self.robot.GetForwardKin(point["J1"])  
-        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
-        ret = self.robot.MoveJ(point["J1"], cartesian_pose, 0, 0, self.speed, 100.0, 100.0, eP, -1.0, 0, dP)
-        # 2. 원두 컵쪽으로 들어가기(Linear)
-        ret = self.robot.MoveL(point["J2"], point["P2"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
-        # 3. 원두 컵 잡기 위해 올림(Linear)
-        self.robot.MoveL(point["J3"], point["P3"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
-        # 3A. 조여서 컵 잡기
-        self.robot.ActGripper(1, 1)
-        self.robot.MoveGripper(1, 0, 40, 50, 10000, 0)
-        # 4. 잡은 뒤 컵 올리기(Linear)
-        self.robot.MoveL(point["J4"], point["P4"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
-        # 5. 붓기 전, 드리퍼 위에 위치시키기(Linear)
-        self.robot.MoveL(point["J5"], point["P5"], 0, 0, self.speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
-        # 6. 붓기 위해 각도 조정(PTP)
-        pose = self.robot.GetForwardKin(point["J6"])  
-        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
-        self.robot.MoveJ(point["J6"], cartesian_pose, 0, 0, self.speed, 100.0, 100.0, eP, -1.0, 0, dP)
-        # 7. 원두 붓기(PTP), 각도조정(Joint6-120)
-        pose = self.robot.GetForwardKin(point["J7"])  
-        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
-        pour_speed = 100.0
-        self.robot.MoveJ(point["J7"], cartesian_pose, 0, 0, pour_speed, 100.0, 100.0, eP, -1.0, 0, dP)
+        # Gripper - 그리퍼 벌리기 (Open the gripper)
+        self.robot.open_gripper()
+        # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
+        self.robot.move_PTP(point["J1"])
+        # 2.Linear - 원두 컵쪽으로 들어가기 (Move forward to the cup)
+        self.robot.move_linear(point["J2"], point["P2"])
+        # 3.Linear - 원두 컵 잡기 위해 올림 (Move up to grab the cup)
+        self.robot.move_linear(point["J3"], point["P3"])
+        # Gripper - 조여서 컵 잡기 (Close the gripper and grap the cup)
+        self.robot.control_gripper(0)
+        # 4.Linear - 잡은 뒤 컵 올리기 (Pick up the cup)
+        self.robot.move_linear(point["J4"], point["P4"])
+        # 5.Linear - 붓기 전, 드리퍼 위에 위치시키기 (Locate the cup over the dripper)
+        self.robot.move_linear(point["J5"], point["P5"])
+        # 6.PTP - 붓기 위해 위치 조정 (Adjust the coordinates to pour it)
+        self.robot.move_PTP(point["J6"])
+        # 7.PTP - 원두 붓기 (Pour it)
+        self.robot.move_PTP(point["J7"], speed=100)
         return
 
     def _bloom(self, time: int, amount: int):
