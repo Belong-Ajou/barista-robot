@@ -38,18 +38,24 @@ class RobotController():
             speed = self.speed
         eP=[0.000,0.000,0.000,0.000]
         dP=[1.000,1.000,1.000,1.000,1.000,1.000]
-        if joint_pose == None:
+        if cartesian_pose == None:
             pose = self.robot.GetForwardKin(joint_pose)
             cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
-        if cartesian_pose == None:
-            pose = self.robot.GetInverseKin(0,joint_pose,-1)
+        if joint_pose == None:
+            pose = self.robot.GetInverseKin(0,cartesian_pose,-1)
             joint_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
         ret = self.robot.MoveJ(joint_pose, cartesian_pose, 0, 0, speed, 100.0, 100.0, eP, -1.0, 0, dP)
 
-    def move_linear(self, joint_pose, cartesian_pose, speed=None):
+    def move_linear(self, joint_pose=None, cartesian_pose=None, speed=None):
         print("Move Linear")
         if speed == None:
             speed = self.speed
         eP=[0.000,0.000,0.000,0.000]
         dP=[1.000,1.000,1.000,1.000,1.000,1.000]
+        if cartesian_pose == None:
+            pose = self.robot.GetForwardKin(joint_pose)
+            cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
+        if joint_pose == None:
+            pose = self.robot.GetInverseKin(0,cartesian_pose,-1)
+            joint_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
         ret = self.robot.MoveL(joint_pose, cartesian_pose, 0, 0, speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)

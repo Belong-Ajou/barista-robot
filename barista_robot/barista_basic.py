@@ -24,25 +24,25 @@ class BaristaBasic(BaristaTemplate):
         # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
         self.robot.move_PTP(cartesian_pose = point["P1"])
         # 2.Linear - 원두 컵쪽으로 들어가기 (Move forward to the cup)
-        self.robot.move_linear(point["J2"], point["P2"])
+        self.robot.move_linear(cartesian_pose = point["P2"])
         # 3.Linear - 원두 컵 잡기 위해 올림 (Move up to grab the cup)
-        self.robot.move_linear(point["J3"], point["P3"])
+        self.robot.move_linear(cartesian_pose = point["P3"])
         # Gripper - 조여서 컵 잡기 (Close the gripper and grap the cup)
         self.robot.control_gripper(0)
         # 4.Linear - 잡은 뒤 컵 올리기 (Pick up the cup)
-        self.robot.move_linear(point["J4"], point["P4"])
+        self.robot.move_linear(cartesian_pose = point["P4"])
         # 5.Linear - 붓기 전, 드리퍼 위에 위치시키기 (Locate the cup over the dripper)
-        self.robot.move_linear(point["J5"], point["P5"])
+        self.robot.move_linear(cartesian_pose = point["P5"])
         # 6.PTP - 붓기 위해 위치 조정 (Adjust the coordinates to pour it)
         self.robot.move_PTP(cartesian_pose = point["P6"])
         # 7.PTP - 원두 붓기 (Pour it)
-        self.robot.move_PTP(point["J7"], speed=100)
+        self.robot.move_PTP(cartesian_pose = point["P7"], speed=100)
         # 8.PTP - 원두 붓고 원위치
         self.robot.move_PTP(cartesian_pose = point["P5"])
         # 9.Linear - 컵 놓는 위치 수직선 상에 위치
-        self.robot.move_linear(point["J4"], point["P4"])
+        self.robot.move_linear(cartesian_pose = point["P4"])
         # 10.Linear - 컵 정위치
-        self.robot.move_linear(point["J2"], point["P2"])
+        self.robot.move_linear(cartesian_pose = point["P2"])
         # Gripper - 컵 놓기
         self.robot.control_gripper(100)
 
