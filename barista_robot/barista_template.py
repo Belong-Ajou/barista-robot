@@ -1,26 +1,20 @@
-from robot_controller.robot_controller import RobotController
 from abc import ABC, abstractmethod
 
 class BaristaTemplate(ABC):
-    def __init__(self, ip) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        try:
-            self.robot = RobotController(ip)
-        except Exception as e:
-            print("[Error]",e)
-            self.robot = None
         return
 
     def make_coffee(self, recipe:dict):
         self._rinse()
         self._place_coffee_grounds()
         for step in recipe:
-            if step == "bloom":
-                self._bloom(recipe[step][0], recipe[step][1])
-            elif step == "pour":
-                self._pour(recipe[step][0], recipe[step][1])
+            if step[0] == "bloom":
+                self._bloom(step[1], step[2])
+            elif step[0] == "pour":
+                self._pour(step[1], step[2])
             elif step == "wait":
-                self._wait(recipe[step][0])
+                self._wait(step[1])
         self._exit()
 
     @abstractmethod
