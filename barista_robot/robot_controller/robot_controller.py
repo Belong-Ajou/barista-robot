@@ -49,3 +49,13 @@ class RobotController():
         eP=[0.000,0.000,0.000,0.000]
         dP=[1.000,1.000,1.000,1.000,1.000,1.000]
         ret = self.robot.MoveL(joint_pose, cartesian_pose, 0, 0, speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
+
+    def move_Spiral(self, joint_pose, cartesian_pose, speed=None):
+        print("Move Spiral")
+        if speed == None:
+            speed = self.speed
+        eP=[0.000,0.000,0.000,0.000]
+        dP=[1.000,1.000,1.000,1.000,1.000,1.000]
+        pose = self.robot.GetForwardKin(joint_pose)  
+        cartesian_pose = [pose[1], pose[2], pose[3], pose[4], pose[5], pose[6]]
+        ret = self.robot.NewSpiral(joint_pose, cartesian_pose, 0, 0, speed, 100.0, 100.0, -1.0, eP, 0, 0, dP)
