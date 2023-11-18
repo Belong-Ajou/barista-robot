@@ -18,7 +18,9 @@ class BaristaBasic(BaristaTemplate):
     def _place_coffee_grounds(self):
         print("Place the coffee grounds in the filter paper.")
         self.robot.set_speed(30.0)
+        home_point = conf.home_point
         point = conf.place_coffee_grounds_point
+        self.robot.move_PTP(cartesian_pose = home_point["P"])
         # Gripper - 그리퍼 벌리기 (Open the gripper)
         self.robot.open_gripper()
         # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
