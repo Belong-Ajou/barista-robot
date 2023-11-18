@@ -1,9 +1,15 @@
 from barista_template import BaristaTemplate
 from robot_controller.robot_behavior import RinseBehavior,SkipRinse,Rinse
+from robot_controller.robot_controller import RobotController
 import conf
 from time import sleep
 
 class BaristaBasic(BaristaTemplate):
+    def __init__(self, ip):
+        super().__init__()
+        self.robot = RobotController(ip)
+        return
+
     def _rinse(self):
         rinse_action = RinseBehavior(SkipRinse())
         rinse_action.rinse()
