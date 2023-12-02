@@ -3,6 +3,7 @@ from robot_controller.robot_behavior import RinseBehavior,SkipRinse,Rinse
 from robot_controller.robot_controller import RobotController
 import conf
 from time import sleep
+import math
 
 class BaristaBasic(BaristaTemplate):
     def __init__(self, ip):
@@ -13,40 +14,43 @@ class BaristaBasic(BaristaTemplate):
     def _rinse(self):
         rinse_action = RinseBehavior(SkipRinse())
         rinse_action.rinse()
+        self.robot.activate_gripper()
         return
 
     def _place_coffee_grounds(self):
         print("Place the coffee grounds in the filter paper.")
-        self.robot.set_speed(30.0)
+        self.robot.set_global_speed(50)
+        self.robot.set_speed(5.0)
         home_point = conf.home_point
         point = conf.place_coffee_grounds_point
-        self.robot.move_PTP(cartesian_pose = home_point["P"])
+        self.robot.move_PTP(cartesian_pose = home_point["P"], joint_pose= home_point["J"])
+
         # Gripper - 그리퍼 벌리기 (Open the gripper)
         self.robot.open_gripper()
-        # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
-        self.robot.move_PTP(cartesian_pose = point["P1"])
-        # 2.Linear - 원두 컵쪽으로 들어가기 (Move forward to the cup)
-        self.robot.move_linear(cartesian_pose = point["P2"])
-        # 3.Linear - 원두 컵 잡기 위해 올림 (Move up to grab the cup)
-        self.robot.move_linear(cartesian_pose = point["P3"])
-        # Gripper - 조여서 컵 잡기 (Close the gripper and grap the cup)
-        self.robot.control_gripper(0)
-        # 4.Linear - 잡은 뒤 컵 올리기 (Pick up the cup)
-        self.robot.move_linear(cartesian_pose = point["P4"])
-        # 5.Linear - 붓기 전, 드리퍼 위에 위치시키기 (Locate the cup over the dripper)
-        self.robot.move_linear(cartesian_pose = point["P5"])
-        # 6.PTP - 붓기 위해 위치 조정 (Adjust the coordinates to pour it)
-        self.robot.move_PTP(cartesian_pose = point["P6"])
-        # 7.PTP - 원두 붓기 (Pour it)
-        self.robot.move_PTP(cartesian_pose = point["P7"], speed=100)
-        # 8.PTP - 원두 붓고 원위치
-        self.robot.move_PTP(cartesian_pose = point["P5"])
-        # 9.Linear - 컵 놓는 위치 수직선 상에 위치
-        self.robot.move_linear(cartesian_pose = point["P4"])
-        # 10.Linear - 컵 정위치
-        self.robot.move_linear(cartesian_pose = point["P2"])
-        # Gripper - 컵 놓기
-        self.robot.control_gripper(100)
+        # # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
+        # self.robot.move_cartesian(point["P1"])
+        # # 2.Linear - 원두 컵쪽으로 들어가기 (Move forward to the cup)
+        # self.robot.move_linear(cartesian_pose = point["P2"])
+        # # 3.Linear - 원두 컵 잡기 위해 올림 (Move up to grab the cup)
+        # self.robot.move_linear(cartesian_pose = point["P3"])
+        # # Gripper - 조여서 컵 잡기 (Close the gripper and grap the cup)
+        # self.robot.control_gripper(0)
+        # # 4.Linear - 잡은 뒤 컵 올리기 (Pick up the cup)
+        # self.robot.move_linear(cartesian_pose = point["P4"])
+        # # 5.Linear - 붓기 전, 드리퍼 위에 위치시키기 (Locate the cup over the dripper)
+        # self.robot.move_linear(cartesian_pose = point["P5"])
+        # # 6.PTP - 붓기 위해 위치 조정 (Adjust the coordinates to pour it)
+        # self.robot.move_cartesian(point["P6"])
+        # # 7.PTP - 원두 붓기 (Pour it)
+        # self.robot.move_cartesian(point["P7"], speed=100.0)
+        # # 8.PTP - 원두 붓고 원위치
+        # self.robot.move_cartesian(point["P5"])
+        # # 9.Linear - 컵 놓는 위치 수직선 상에 위치
+        # self.robot.move_linear(cartesian_pose = point["P4"])
+        # # 10.Linear - 컵 정위치
+        # self.robot.move_linear(cartesian_pose = point["P2"])
+        # # Gripper - 컵 놓기
+        # self.robot.control_gripper(100)
 
         return
 
@@ -110,6 +114,6 @@ class BaristaBasic(BaristaTemplate):
         return
 
 if __name__ == "__main__":
-    my_recipe = {"bloom":[10, 100], "pour": [10, 90], "wait":[120]}
+    my_recipe = [ ["bloom", 10, 100], ["pour", 10, 90], ["wait", 120] ]
     barista = BaristaBasic("192.168.58.2")
     barista.make_coffee(my_recipe)

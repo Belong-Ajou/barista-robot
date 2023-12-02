@@ -13,7 +13,7 @@ class BaristaTemplate(ABC):
                 self._bloom(step[1], step[2])
             elif step[0] == "pour":
                 self._pour(step[1], step[2])
-            elif step == "wait":
+            elif step[0] == "wait":
                 self._wait(step[1])
         self._exit()
 
