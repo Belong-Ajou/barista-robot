@@ -9,13 +9,13 @@ class robotController:
         self.robot = frrpc.RPC(ip)
 
         self.robot.Mode(0)
-        self.robot.SetSpeed(50)
+        self.robot.SetSpeed(30)
 
         self.robot.ResetAllError()
 
     def run_program(self, program):
-        print(f'run program: res/{program}.lua')
-        self.robot.ProgramLoad(f'res/{program}.lua')
+        print(f'run program: /fruser/{program}.lua')
+        ret = self.robot.ProgramLoad(f'/fruser/{program}.lua')
         self.robot.ProgramRun()
         cnt = 0
         while True:
@@ -27,4 +27,4 @@ class robotController:
 
 if __name__ == "__main__":
     robot = robotController({"ip":"192.168.58.2"})
-    robot.run_program('Testsu.lua')
+    robot.run_program('Tetsu')

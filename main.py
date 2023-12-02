@@ -3,6 +3,7 @@ from flask import Flask, request, json, jsonify
 import sys
 sys.path.append('./barista_robot')
 from barista_robot.barista_test import BaristaTest
+import demo
 
 app = Flask(__name__)
 
@@ -19,8 +20,11 @@ def start_drip():
         temp.append(params["sec"][i])
         my_recipe.append(temp)
     print(my_recipe)
-    barista = BaristaTest()
-    barista.make_coffee(my_recipe)
+    robot = demo.robotController({"ip":"192.168.58.2"})
+    if params["name"] == "Tetsu Kasuya":
+        robot.run_program('Tetsu')
+    # barista = BaristaTest()
+    # barista.make_coffee(my_recipe)
 
     response = {
         "result": "ok"
