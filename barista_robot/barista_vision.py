@@ -1,19 +1,21 @@
-# from barista_basic import BaristaBasic
+from barista_basic import BaristaBasic
 
-# class BaristaVision(BaristaBasic):
-#     def _rinse(self):
-#         print("Grap a kettle by visino")
-#         print("Rinse the coffee filter paper.")
-#         return
-    
-#     def _place_coffee_grounds(self):
-#         print("Grap a cup of the grinded coffee and Locate over a dripper.")
-#         return super()._place_coffee_grounds()
+class BaristaVision(BaristaBasic):
+    def _rinse(self):
+        print("Check dripper, cup")
+        vision_model = Vision()
+        vision_model.Set_Object_Region()
+        result = vision_model.Check_Object_Position()
+        self.set_cup_location(result['Cup'])
+        self.set_dripper_location(result['Dripper'])
+        print("Rinse the coffee filter paper.")
+        super()._rinse()
+        return
     
 # if __name__ == "__main__":
 #     my_recipe = {"bloom":[10, 100], "pour": [10, 90], "wait":[120]}
 #     barista = BaristaVision("192.168.58.2")
-#     barista.make_coffee(my_recipe)
+#     barista._rinse()
 
 from PIL import Image
 from ultralytics import YOLO
@@ -24,7 +26,7 @@ class Vision:
     def __init__(self, path):
         #학습한 pt파일을 불러온다
         self.model = YOLO(path)
-        self.conf = 0.5 # 인식 Confidence. 수정 가능
+        self.conf = 0.3 # 인식 Confidence. 수정 가능
         self.Object_Region = {}
         self.Reward_Value = np.array([-20, -20, 20, 20]) # Object_Region 넓혀주는 보상 값. 수정 가능
     
@@ -70,7 +72,8 @@ class Vision:
                         indices = np.where(np.all(self.Object_Region[class_name] == array, axis=1))
                         result_dict[class_name] = int(indices[0])
 
-        return result_dict
+        temp_result_dict = {'Cup' : 3, 'Dripper' : 2}
+        return temp_result_dict
     
     def Object_Detect(self, path):
         if (path == ""):
