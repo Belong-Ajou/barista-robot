@@ -55,3 +55,30 @@ grab_kettle_point = \
         # 4. 드리퍼 가기 전 위치 
         "P4" : [233.034, 158.849, 506.158, 0.503, 85.955, 58.024]  
     }
+
+brewing_program = \
+    {
+        "recipe1_1" : "brewing1",
+        "recipe1_2" : "brewing2",
+        "recipe1_3" : "brewing3"
+    }
+
+
+''' brewing2.lua
+PTP(hardcoding13,20,-1,0)
+PTP(hardcodingspiralnew1,20,-1,0)
+Spiral(hardcodingspiralnew2,hardcodingspiralnew3,hardcodingspiralnew4,5,0,0,0,0,0,0,0,5,0,0,0,28,0)
+PTP(hardcoding13,20,-1,0)
+sleep_ms(35000)
+PTP(hardcodingspiralnew5,20,-1,0)
+Spiral(hardcodingspiralnew6,hardcodingspiralnew7,hardcodingspiralnew8,5,0,0,0,0,0,0,0,6,0,0,0,20,0)
+PTP(hardcoding13,20,-1,0)
+sleep_ms(35000)
+PTP(hardcodingspiralnew9,20,-1,0)
+Spiral(hardcodingspiralnew10,hardcodingspiralnew11,hardcodingspiralnew12,5,0,0,0,0,0,0,0,5,0,0,0,20,0)
+PTP(hardcoding13,20,-1,0)
+sleep_ms(35000)
+PTP(hardcodingspiralnew13,20,-1,0)
+Spiral(hardcodingspiralnew14,hardcodingspiralnew15,hardcodingspiralnew16,5,0,0,0,0,0,0,0,5,0,0,0,20,0)
+PTP(hardcoding13,20,-1,0)
+'''

@@ -11,6 +11,7 @@ class BaristaBasic(BaristaTemplate):
         self.robot = RobotController(ip)
         self.dripper_location = 1
         self.cup_location = 1
+    
         return
 
     def _rinse(self):
@@ -52,31 +53,32 @@ class BaristaBasic(BaristaTemplate):
         self.robot.move_cartesian(self._calculate_point(dripper_point["P1"], dripper_offset, 'y'))
 
         # 사용한 컵 두기
-        # used_cup_point = conf.place_used_cup_point
-        # self.robot.move_cartesian(used_cup_point["P1"])
-        # self.robot.move_linear(cartesian_pose = used_cup_point["P2"])
-        # self.robot.open_gripper()
-        # sleep(1)
-        # self.robot.move_cartesian(cartesian_pose = used_cup_point["P1"])
+        used_cup_point = conf.place_used_cup_point
+        self.robot.move_cartesian(used_cup_point["P1"])
+        self.robot.move_linear(cartesian_pose = used_cup_point["P2"])
+        self.robot.open_gripper()
+        sleep(1)
+        self.robot.move_cartesian(cartesian_pose = used_cup_point["P1"])
 
         return
 
     def _bloom(self, time: int, amount: int):
         print("Bloom: Pour in {0} grams of hot water, wait {1} seconds".format(str(amount), str(time)))
-        # # 케틀 잡기
-        # kettle_point = conf.grab_kettle_point
-        # self.robot.move_cartesian(kettle_point["P1"])
-        # self.robot.open_gripper()
-        # self.robot.move_linear(cartesian_pose = kettle_point["P2"])
-        # self.robot.close_gripper()
-        # sleep(1)
-        # self.robot.move_linear(cartesian_pose = kettle_point["P3"])
-        # self.robot.move_cartesian(kettle_point["P4"])
+        # 케틀 잡기
+        kettle_point = conf.grab_kettle_point
+        self.robot.move_cartesian(kettle_point["P1"])
+        self.robot.open_gripper()
+        self.robot.move_linear(cartesian_pose = kettle_point["P2"])
+        self.robot.close_gripper()
+        sleep(1)
+        self.robot.move_linear(cartesian_pose = kettle_point["P3"])
+        self.robot.move_cartesian(kettle_point["P4"])
 
         return
 
     def _pour(self, time: int, amount: int):
         print("Pour: Pour in {0} grams of hot water, wait {1} seconds".format(str(amount), str(time)))
+        self.robot.run_program(conf.brewing_program["recipe1_2"])
         return
 
     def _wait(self, time:int):
@@ -84,18 +86,18 @@ class BaristaBasic(BaristaTemplate):
 
     def _exit(self):
         print("Enjoy you coffee!")
-        # # 케틀 두기
-        # kettle_point = conf.grab_kettle_point
-        # self.robot.move_cartesian(kettle_point["P4"])
-        # self.robot.move_cartesian(kettle_point["P3"])
-        # self.robot.move_linear(cartesian_pose = kettle_point["P2"])
-        # self.robot.open_gripper()
-        # sleep(1)
-        # self.robot.move_linear(cartesian_pose = kettle_point["P1"])
-        # self.robot.move_cartesian(kettle_point["P4"])
+        # 케틀 두기
+        kettle_point = conf.grab_kettle_point
+        self.robot.move_cartesian(kettle_point["P4"])
+        self.robot.move_cartesian(kettle_point["P3"])
+        self.robot.move_linear(cartesian_pose = kettle_point["P2"])
+        self.robot.open_gripper()
+        sleep(1)
+        self.robot.move_linear(cartesian_pose = kettle_point["P1"])
+        self.robot.move_cartesian(kettle_point["P4"])
         
-        # home_point = conf.home_point
-        # self.robot.move_PTP(cartesian_pose = home_point["P"], joint_pose= home_point["J"])
+        home_point = conf.home_point
+        self.robot.move_PTP(cartesian_pose = home_point["P"], joint_pose= home_point["J"])
         return
 
     def set_dripper_location(self, dripper_loc):
@@ -130,24 +132,9 @@ if __name__ == "__main__":
         barista.robot.set_global_speed(50)
         barista.robot.set_speed(5.0)
         barista.set_cup_location(1)
-        barista.set_dripper_location(1)
-        home_point = conf.home_point
-        cup_point = conf.grab_cup_point
-        barista.robot.move_PTP(cartesian_pose = home_point["P"], joint_pose= home_point["J"])
-
-        cup_offset = (barista.cup_location-1)*cup_point["CUP_X_OFFSET"]
-        # Gripper - 그리퍼 벌리기 (Open the gripper)
-        barista.robot.open_gripper()
-        # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
-        barista.robot.move_cartesian(barista._calculate_point(cup_point["P1"], cup_offset, 'x'))
-        # 2.Linear - 원두 컵쪽으로 들어가기 (Move forward to the cup)
-        barista.robot.move_linear(cartesian_pose = barista._calculate_point(cup_point["P2"], cup_offset, 'x'))
-        # Gripper - 조여서 컵 잡기 (Close the gripper and grap the cup)
-        barista.robot.close_gripper()
-        # 4.Linear - 잡은 뒤 컵 올리기 (Pick up the cup)
-        barista.robot.move_linear(cartesian_pose = barista._calculate_point(cup_point["P1"], cup_offset, 'x'))
-        
+        barista.set_dripper_location(2)
+        barista._pour(1,1)
     else: 
         barista.set_cup_location(1)
-        barista.set_dripper_location(1)
+        barista.set_dripper_location(2)
         barista.make_coffee(my_recipe)
