@@ -8,6 +8,7 @@ class RobotController():
         self.global_speed = 30
         self.speed = 30.0
         self.robot.SetSpeed(self.global_speed)
+        self.robot.ResetAllError()
 
     def set_global_speed(self, speed):
         print("Set global speed:", speed)
@@ -70,3 +71,19 @@ class RobotController():
             speed = self.speed
         self.robot.MoveCart(cartesian_pose,0,0,speed,100.0,100.0,-1.0,-1)
         # time.sleep(10)
+    
+    def run_program(self, program):
+        print(f'run program: /fruser/{program}.lua')
+        time.sleep(1)
+        self.robot.Mode(0)
+        ret = self.robot.ProgramLoad(f'/fruser/{program}.lua')
+        self.robot.ProgramRun()
+        cnt = 0
+        while True:
+            state = self.robot.GetProgramState()[1]
+            if state == 1: cnt += 1
+            elif state == 2: cnt = 0
+            if cnt == 2: break
+            time.sleep(0.5)
+            # print(f"state:{state}")
+        time.sleep(0.5)
