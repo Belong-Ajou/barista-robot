@@ -1,25 +1,6 @@
-from barista_basic import BaristaBasic
-
-class BaristaVision(BaristaBasic):
-    def _rinse(self):
-        print("Check dripper, cup")
-        vision_model = Vision()
-        vision_model.Set_Object_Region()
-        result = vision_model.Check_Object_Position()
-        self.set_cup_location(result['Cup'])
-        self.set_dripper_location(result['Dripper'])
-        print("Rinse the coffee filter paper.")
-        super()._rinse()
-        return
-    
-# if __name__ == "__main__":
-#     my_recipe = {"bloom":[10, 100], "pour": [10, 90], "wait":[120]}
-#     barista = BaristaVision("192.168.58.2")
-#     barista._rinse()
-
 from PIL import Image
 from ultralytics import YOLO
-import barista_camera as AK
+import vision.camera_controller as AK
 import numpy as np
 
 class Vision:
@@ -54,23 +35,23 @@ class Vision:
         return
     
     def Check_Object_Position(self, path = ""):
-        results = self.Object_Detect(path)
+        # results = self.Object_Detect(path)
 
-        boxes = results[0].boxes
-        paired_boxes = [pair for pair in zip(boxes.xyxy.cpu().detach().numpy(), boxes.conf.cpu().detach().numpy(), boxes.cls.cpu().numpy()) if pair[1] >= self.conf and pair[2] != 2]
+        # boxes = results[0].boxes
+        # paired_boxes = [pair for pair in zip(boxes.xyxy.cpu().detach().numpy(), boxes.conf.cpu().detach().numpy(), boxes.cls.cpu().numpy()) if pair[1] >= self.conf and pair[2] != 2]
 
-        result_dict = {}
-        for box in paired_boxes:
-            class_name = self.model.names[box[2]]
-            box_array = box[0]
+        # result_dict = {}
+        # for box in paired_boxes:
+        #     class_name = self.model.names[box[2]]
+        #     box_array = box[0]
 
-            if (class_name in result_dict.keys()):
-                continue
-            else:
-                for array in self.Object_Region[class_name]:
-                    if box_array[0] >= array[0] and box_array[1] >= array[1] and box_array[2] <= array[2] and box_array[3] <= array[3]:
-                        indices = np.where(np.all(self.Object_Region[class_name] == array, axis=1))
-                        result_dict[class_name] = int(indices[0])
+        #     if (class_name in result_dict.keys()):
+        #         continue
+        #     else:
+        #         for array in self.Object_Region[class_name]:
+        #             if box_array[0] >= array[0] and box_array[1] >= array[1] and box_array[2] <= array[2] and box_array[3] <= array[3]:
+        #                 indices = np.where(np.all(self.Object_Region[class_name] == array, axis=1))
+        #                 result_dict[class_name] = int(indices[0])
 
         temp_result_dict = {'Cup' : 3, 'Dripper' : 2}
         return temp_result_dict
@@ -84,8 +65,36 @@ class Vision:
             results = self.model(path)  # results list
         return results
 
+from barista_basic import BaristaBasic
+
+class BaristaVision(BaristaBasic):
+    def _rinse(self):
+        print("Check dripper, cup")
+        vision_model = Vision(r'./barista_robot/best.pt')
+        vision_model.Set_Object_Region()
+        result = vision_model.Check_Object_Position()
+        print(f"Vision result:{result}")
+        self.set_cup_location(result['Cup'])
+        self.set_dripper_location(result['Dripper'])
+        print("Rinse the coffee filter paper.")
+        super()._rinse()
+        return
+    
 if __name__ == "__main__":
-    vision_model = Vision(r"C:\이창훈\대학\4-2\Code\best.pt")
-    vision_model.Set_Object_Region()
-    result = vision_model.Check_Object_Position()
-    print(result)
+    # mode = "Debug"
+    mode = "Release"
+    if mode == "Debug":
+        # barista.robot.activate_gripper()
+        # barista.robot.set_global_speed(50)
+        # barista.robot.set_speed(5.0)
+        # barista.set_cup_location(1)
+        # barista.set_dripper_location(2)
+        # barista._pour(1,1)
+        vision_model = Vision(r'./barista_robot/best.pt')
+        vision_model.Set_Object_Region()
+        result = vision_model.Check_Object_Position()
+        print(result)
+    else: 
+        my_recipe = [["bloom", 0, 0], ["pour", 10, 90]]
+        barista = BaristaVision("192.168.58.2")
+        barista.make_coffee(my_recipe)
