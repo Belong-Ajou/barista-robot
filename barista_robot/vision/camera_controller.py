@@ -97,8 +97,12 @@ def capture_image():
         capture = k4a.get_capture()
         if np.any(capture.color):
             color_img = capture.color[:, :, :3]
+
+            # Resize color_img to 640x640
+            resized_color_img = cv2.resize(color_img, (640, 640))
+
             k4a.stop()
-            return color_img
+            return resized_color_img
         else:
             i = i + 1
             print('Retry Count : ' + i)
