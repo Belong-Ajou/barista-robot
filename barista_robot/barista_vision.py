@@ -2,9 +2,11 @@ from PIL import Image
 from ultralytics import YOLO
 import vision.camera_controller as AK
 import numpy as np
+from barista_basic import BaristaBasic
 
-class Vision:
+class BaristaVision(BaristaBasic):
     def __init__(self, path):
+        super().__init__()
         #학습한 pt파일을 불러온다
         self.model = YOLO(path)
         self.conf = 0.3 # 인식 Confidence. 수정 가능
@@ -64,21 +66,16 @@ class Vision:
         else:
             results = self.model(path)  # results list
         return results
-
-# from barista_basic import BaristaBasic
-
-# class BaristaVision(BaristaBasic):
-#     def _rinse(self):
-#         print("Check dripper, cup")
-#         vision_model = Vision(r'./barista_robot/best.pt')
-#         vision_model.Set_Object_Region()
-#         result = vision_model.Check_Object_Position()
-#         print(f"Vision result:{result}")
-#         self.set_cup_location(result['Cup'])
-#         self.set_dripper_location(result['Dripper'])
-#         print("Rinse the coffee filter paper.")
-#         super()._rinse()
-#         return
+    
+    def _rinse(self):
+        print("Check dripper, cup")
+        result = self.Check_Object_Position()
+        print(f"Vision result:{result}")
+        self.set_cup_location(result['Cup'])
+        self.set_dripper_location(result['Dripper'])
+        print("Rinse the coffee filter paper.")
+        super()._rinse()
+        return
     
 if __name__ == "__main__":
     mode = "Debug"
@@ -90,11 +87,11 @@ if __name__ == "__main__":
         # barista.set_cup_location(1)
         # barista.set_dripper_location(2)
         # barista._pour(1,1)
-        vision_model = Vision(r'./barista_robot/best.pt')
+        vision_model = BaristaVision(r'./barista_robot/best.pt')
         vision_model.Set_Object_Region()
         result = vision_model.Check_Object_Position()
         print(result)
-    # else: 
-        # my_recipe = [["bloom", 0, 0], ["pour", 10, 90]]
-        # barista = BaristaVision("192.168.58.2")
-        # barista.make_coffee(my_recipe)
+    else: 
+        my_recipe = [["bloom", 0, 0], ["pour", 10, 90]]
+        barista = BaristaVision("192.168.58.2")
+        barista.make_coffee(my_recipe)
