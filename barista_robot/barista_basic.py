@@ -79,7 +79,7 @@ class BaristaBasic(BaristaTemplate):
 
     def _pour(self, time: int, amount: int):
         print("Pour: Pour in {0} grams of hot water, wait {1} seconds".format(str(amount), str(time)))
-        self.robot.run_program(conf.brewing_program["recipe1_2"])
+        self.robot.run_program(conf.brewing_program[f"recipe1_{str(self.dripper_location)}"])
         return
 
     def _wait(self, time:int):
@@ -132,19 +132,19 @@ if __name__ == "__main__":
         barista.robot.set_global_speed(50)
         barista.robot.set_speed(10.0)
         barista.set_cup_location(1)
-        barista.set_dripper_location(1)
+        barista.set_dripper_location(2)
         # barista.robot.activate_gripper()
-        # barista.robot.close_gripper()
-        sleep(1)
+        # barista._pour(1,1)
+        # sleep(1)
         kettle_point = conf.grab_kettle_point
-        # # barista._place_coffee_grounds()
-        barista.robot.move_cartesian(kettle_point["P1"])
-        barista.robot.open_gripper()
-        barista.robot.move_linear(cartesian_pose = kettle_point["P2"])
-        barista.robot.close_gripper()
-        barista.robot.move_linear(cartesian_pose = kettle_point["P3"])
-        barista.robot.move_cartesian(kettle_point["P4"])
-        sleep(1)
+        # # # barista._place_coffee_grounds()
+        # barista.robot.move_cartesian(kettle_point["P1"])
+        # barista.robot.open_gripper()
+        # barista.robot.move_linear(cartesian_pose = kettle_point["P2"])
+        # barista.robot.close_gripper()
+        # barista.robot.move_linear(cartesian_pose = kettle_point["P3"])
+        # barista.robot.move_cartesian(kettle_point["P4"])
+        # sleep(1)
     else: 
         barista.set_cup_location(1)
         barista.set_dripper_location(1)

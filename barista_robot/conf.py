@@ -81,7 +81,7 @@ grab_kettle_point = \
 
 brewing_program = \
     {
-        "recipe1_1" : "brewing1",
+        "recipe1_1" : "brewing3",
         "recipe1_2" : "brewing2",
-        "recipe1_3" : "brewing3"
+        "recipe1_3" : "brewing1"
     }
