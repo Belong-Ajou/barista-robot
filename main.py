@@ -2,7 +2,7 @@ from flask import Flask, request, json, jsonify
 
 import sys
 sys.path.append('./barista_robot')
-from barista_robot.barista_test import BaristaTest
+from barista_robot.barista_vision import BaristaVision
 import demo
 
 app = Flask(__name__)
@@ -23,8 +23,7 @@ def start_drip():
     robot = demo.robotController({"ip":"192.168.58.2"})
     if params["name"] == "Tetsu Kasuya":
         robot.run_program('Tetsu')
-    # barista = BaristaTest()
-    # barista.make_coffee(my_recipe)
+    barista.make_coffee(my_recipe)
 
     response = {
         "result": "ok"
@@ -34,4 +33,6 @@ def start_drip():
 
 
 if __name__ == "__main__":
+    barista = BaristaVision(r'./barista_robot/best.pt', "192.168.58.2")
+    barista.Set_Object_Region()
     app.run(debug=True, host='0.0.0.0', port=8080)

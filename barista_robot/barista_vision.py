@@ -5,8 +5,8 @@ import numpy as np
 from barista_basic import BaristaBasic
 
 class BaristaVision(BaristaBasic):
-    def __init__(self, path):
-        super().__init__()
+    def __init__(self, path, ip):
+        super().__init__(ip)
         #학습한 pt파일을 불러온다
         self.model = YOLO(path)
         self.conf = 0.3 # 인식 Confidence. 수정 가능
@@ -53,7 +53,7 @@ class BaristaVision(BaristaBasic):
                 for array in self.Object_Region[class_name]:
                     if box_array[0] >= array[0] and box_array[1] >= array[1] and box_array[2] <= array[2] and box_array[3] <= array[3]:
                         indices = np.where(np.all(self.Object_Region[class_name] == array, axis=1))
-                        result_dict[class_name] = int(indices[0])
+                        result_dict[class_name] = int(indices[0]) + 1
 
         # temp_result_dict = {'Cup' : 3, 'Dripper' : 2}
         return result_dict
@@ -78,8 +78,8 @@ class BaristaVision(BaristaBasic):
         return
     
 if __name__ == "__main__":
-    mode = "Debug"
-    # mode = "Release"
+    # mode = "Debug"
+    mode = "Release"
     if mode == "Debug":
         # barista.robot.activate_gripper()
         # barista.robot.set_global_speed(50)
@@ -93,5 +93,6 @@ if __name__ == "__main__":
         print(result)
     else: 
         my_recipe = [["bloom", 0, 0], ["pour", 10, 90]]
-        barista = BaristaVision("192.168.58.2")
+        barista = BaristaVision(r'./barista_robot/best.pt', "192.168.58.2")
+        barista.Set_Object_Region()
         barista.make_coffee(my_recipe)
