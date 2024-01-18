@@ -17,7 +17,7 @@ class BaristaBasic(BaristaTemplate):
     def _rinse(self):
         rinse_action = RinseBehavior(SkipRinse())
         rinse_action.rinse()
-        # self.robot.activate_gripper()
+        self.robot.activate_gripper()
         return
 
     def _place_coffee_grounds(self):
@@ -30,13 +30,13 @@ class BaristaBasic(BaristaTemplate):
 
         cup_offset = (self.cup_location-1)*cup_point["CUP_X_OFFSET"]
         # Gripper - 그리퍼 벌리기 (Open the gripper)
-        # self.robot.open_gripper()
+        self.robot.open_gripper()
         # 1.PTP - 원두 컵 앞에 위치 (Locate in front of the cup of coffee beans)
         self.robot.move_cartesian(self._calculate_point(cup_point["P1"], cup_offset, 'x'))
         # 2.Linear - 원두 컵쪽으로 들어가기 (Move forward to the cup)
         self.robot.move_linear(cartesian_pose = self._calculate_point(cup_point["P2"], cup_offset, 'x'))
         # Gripper - 조여서 컵 잡기 (Close the gripper and grap the cup)
-        # self.robot.close_gripper()
+        self.robot.close_gripper()
         # 4.Linear - 잡은 뒤 컵 올리기 (Pick up the cup)
         self.robot.move_linear(cartesian_pose = self._calculate_point(cup_point["P1"], cup_offset, 'x'))
         
@@ -56,7 +56,7 @@ class BaristaBasic(BaristaTemplate):
         used_cup_point = conf.place_used_cup_point
         self.robot.move_cartesian(used_cup_point["P1"])
         self.robot.move_linear(cartesian_pose = used_cup_point["P2"])
-        # self.robot.open_gripper()
+        self.robot.open_gripper()
         sleep(1)
         self.robot.move_cartesian(cartesian_pose = used_cup_point["P1"])
 
@@ -67,9 +67,9 @@ class BaristaBasic(BaristaTemplate):
         # 케틀 잡기
         kettle_point = conf.grab_kettle_point
         self.robot.move_cartesian(kettle_point["P1"])
-        # self.robot.open_gripper()
+        self.robot.open_gripper()
         self.robot.move_linear(cartesian_pose = kettle_point["P2"])
-        # self.robot.close_gripper()
+        self.robot.close_gripper()
         sleep(1)
         self.robot.move_linear(cartesian_pose = kettle_point["P3"])
         self.robot.move_cartesian(kettle_point["P4"])
@@ -91,7 +91,7 @@ class BaristaBasic(BaristaTemplate):
         self.robot.move_cartesian(kettle_point["P4"])
         self.robot.move_cartesian(kettle_point["P3"])
         self.robot.move_linear(cartesian_pose = kettle_point["P2"])
-        # self.robot.open_gripper()
+        self.robot.open_gripper()
         sleep(1)
         self.robot.move_linear(cartesian_pose = kettle_point["P1"])
         self.robot.move_cartesian(kettle_point["P4"])
