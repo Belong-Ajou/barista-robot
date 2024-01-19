@@ -23,6 +23,8 @@ class Vision:
         
         boxes = results[0].boxes
         paired_boxes = [pair for pair in zip(boxes.xyxy.cpu().detach().numpy(), boxes.conf.cpu().detach().numpy(), boxes.cls.cpu().numpy()) if pair[1] >= self.conf and pair[2] != 2]
+        
+        
         sorted_boxes = sorted(paired_boxes, key=lambda x: x[0][0], reverse=False) # x좌표로 오름차순 정렬
         for box in sorted_boxes:
             class_name = self.model.names[box[2]]
@@ -32,6 +34,20 @@ class Vision:
                 self.Object_Region[class_name] = np.append(temp_arr, [Box_Rewarded], axis=0)
             else:
                 self.Object_Region[class_name] = [Box_Rewarded]
+        
+        for box in sorted_boxes:
+            class_name = self.model.names[box[2]]
+            box_array = box[0]
+
+            # Extracting top-left (X1, Y1) and bottom-right (X2, Y2) coordinates of the bounding box
+            x1, y1, x2, y2 = box_array[:4]
+
+            # Optionally, you can calculate the center coordinates
+            center_x = (x1 + x2) / 2
+            center_y = (y1 + y2) / 2
+
+            print(f"Object: {class_name}, Coordinates: Top-Left({x1}, {y1}), Center({center_x}, {center_y}), Bottom-Right({x2}, {y2})")
+
 
         return
     
@@ -39,6 +55,7 @@ class Vision:
         results = self.Object_Detect(path)
 
         boxes = results[0].boxes
+
         paired_boxes = [pair for pair in zip(boxes.xyxy.cpu().detach().numpy(), boxes.conf.cpu().detach().numpy(), boxes.cls.cpu().numpy()) if pair[1] >= self.conf and pair[2] != 2]
 
         result_dict = {}
@@ -91,7 +108,7 @@ if __name__ == "__main__":
         # barista.set_cup_location(1)
         # barista.set_dripper_location(2)
         # barista._pour(1,1)
-        vision_model = Vision(r'./barista_robot/best.pt')
+        vision_model = Vision(r'./barista-robot/barista_robot/best.pt')
         vision_model.Set_Object_Region()
         result = vision_model.Check_Object_Position()
         print(result)
