@@ -41,9 +41,9 @@ class BaristaVision(BaristaBasic):
 
         boxes = results[0].boxes
         paired_boxes = [pair for pair in zip(boxes.xyxy.cpu().detach().numpy(), boxes.conf.cpu().detach().numpy(), boxes.cls.cpu().numpy()) if pair[1] >= self.conf and pair[2] != 2]
-
+        sorted_boxes = sorted(paired_boxes, key=lambda x: x[0][0], reverse=False) # x좌표로 오름차순 정렬
         result_dict = {}
-        for box in paired_boxes:
+        for box in sorted_boxes:
             class_name = self.model.names[box[2]]
             box_array = box[0]
 
