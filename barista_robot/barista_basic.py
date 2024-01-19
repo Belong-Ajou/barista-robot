@@ -23,7 +23,7 @@ class BaristaBasic(BaristaTemplate):
     def _place_coffee_grounds(self):
         print("Place the coffee grounds in the filter paper.")
         self.robot.set_global_speed(50)
-        self.robot.set_speed(15.0)
+        self.robot.set_speed(25.0)
         home_point = conf.home_point
         cup_point = conf.grab_cup_point
         self.robot.move_PTP(cartesian_pose = home_point["P"], joint_pose= home_point["J"])
@@ -58,7 +58,7 @@ class BaristaBasic(BaristaTemplate):
         self.robot.move_cartesian(used_cup_point["P1"])
         self.robot.move_linear(cartesian_pose = used_cup_point["P2"])
         self.robot.open_gripper()
-        sleep(1)
+        sleep(2)
         self.robot.move_cartesian(cartesian_pose = used_cup_point["P1"])
 
         return
