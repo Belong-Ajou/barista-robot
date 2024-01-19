@@ -19,6 +19,7 @@ class Vision:
             im_array = r.plot()  # plot a BGR numpy array of predictions
             im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
             im.show()  # show image
+            im.save("./image_result_box.jpg", "JPEG")
         
         boxes = results[0].boxes
         paired_boxes = [pair for pair in zip(boxes.xyxy.cpu().detach().numpy(), boxes.conf.cpu().detach().numpy(), boxes.cls.cpu().numpy()) if pair[1] >= self.conf and pair[2] != 2]
