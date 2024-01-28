@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 import os
+from defisheye import Defisheye
+import time
+from PIL import Image
 
 import pyk4a
 from pyk4a import Config, PyK4A
@@ -103,6 +106,67 @@ def capture_image():
 
             k4a.stop()
             return resized_color_img
+        else:
+            i = i + 1
+            print('Retry Count : ' + i)
+    
+    k4a.stop()
+
+def capture_image_ver2():
+    k4a = PyK4A(
+        Config(
+            color_format=pyk4a.ImageFormat.COLOR_BGRA32,
+            color_resolution=pyk4a.ColorResolution.RES_1080P,
+            depth_mode=pyk4a.DepthMode.WFOV_UNBINNED,
+            #depth_mode=pyk4a.DepthMode.OFF,
+            camera_fps=pyk4a.FPS.FPS_15,
+            synchronized_images_only=True,
+        )
+    )
+    k4a.start()
+
+    i = 0
+    while 1:
+        capture = k4a.get_capture()
+        if np.any(capture.color):
+            color_img = capture.color[:, :, :3]
+            depth_img = capture.depth
+
+            # Resize color_img to 640x640
+            resized_color_img = cv2.resize(color_img, (640, 640))
+
+            # Depth Image mapping
+            dtype = 'linear'
+            format = 'fullframe'
+            fov = 180
+            pfov = 120
+
+            # Reshape depth_img to have a third dimension of size 1
+            depth_img_reshaped = depth_img.reshape(depth_img.shape[0], depth_img.shape[1], 1)
+
+            # Replicate the values across the third dimension
+            array_out = np.repeat(depth_img_reshaped, 3, axis=2)
+            depth_img = array_out
+
+            obj = Defisheye(depth_img, dtype=dtype, format=format, fov=fov, pfov=pfov)
+            new_image = obj.convert()
+
+            # Cropping image
+            crop_coordinates = (175, 720, 45, 1020)  # Adjust these values as needed
+
+            # Crop the image using NumPy slicing
+            y_min, y_max, x_min, x_max = crop_coordinates
+            cropped_image = new_image[y_min:y_max, x_min:x_max]
+            resized_image = cv2.resize(cropped_image, (640, 640), interpolation=cv2.INTER_NEAREST)
+            print("resized_image:", resized_image)
+            print("resized_image.shape:", resized_image.shape)
+
+            # Select one channel from the 3D array. Assuming all channels have the same value, we can just take the first.
+            resized_image_2d = resized_image[:, :, 0]
+            resized_image_2d_colorized = colorize(resized_image_2d, (None, 10000), cv2.COLORMAP_HSV)
+
+            k4a.stop()
+            return resized_color_img, resized_image_2d
         else:
             i = i + 1
             print('Retry Count : ' + i)
